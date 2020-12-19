@@ -34,7 +34,7 @@ RUN sh /tmp/install.sh
 ADD --chown=tomcat:tomcat https://github.com/HiromuHota/pentaho-kettle/releases/download/webspoon%2F$version/webspoon-security-$dist-$patch.jar ${CATALINA_HOME}/lib/
 RUN echo "CLASSPATH="$CATALINA_HOME"/lib/webspoon-security-$dist-$patch.jar" | tee ${CATALINA_HOME}/bin/setenv.sh
 COPY --chown=tomcat:tomcat catalina.policy ${CATALINA_HOME}/conf/
-COPY --chown=tomcat:tomcat mariadb-java-client-2.6.0.jar  ${CATALINA_HOME}/webapps/spoon/WEB-INF/lib/
+COPY --chown=tomcat:tomcat drivers/*  ${CATALINA_HOME}/webapps/spoon/WEB-INF/lib/
 RUN mkdir -p $HOME/.kettle/users && mkdir -p $HOME/.pentaho/users
 RUN mkdir -p $HOME/.kettle/data && cp -r ${CATALINA_HOME}/samples $HOME/.kettle/data/samples
 
@@ -55,7 +55,6 @@ RUN echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib"  
  && echo "deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" >> /etc/apt/sources.list
 
 RUN apt-get clean && apt-get update \
-    && apt-get install --assume-yes apt-utils \
     && apt-get install -y vim locales ttf-wqy-zenhei ibus ibus-gtk ibus-pinyin
 
 RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
