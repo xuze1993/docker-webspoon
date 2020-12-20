@@ -34,6 +34,7 @@ RUN sh /tmp/install.sh
 ADD --chown=tomcat:tomcat https://github.com/HiromuHota/pentaho-kettle/releases/download/webspoon%2F$version/webspoon-security-$dist-$patch.jar ${CATALINA_HOME}/lib/
 RUN echo "CLASSPATH="$CATALINA_HOME"/lib/webspoon-security-$dist-$patch.jar" | tee ${CATALINA_HOME}/bin/setenv.sh
 COPY --chown=tomcat:tomcat catalina.policy ${CATALINA_HOME}/conf/
+## 找不到合适的直链分享大文件
 COPY --chown=tomcat:tomcat drivers/*  ${CATALINA_HOME}/webapps/spoon/WEB-INF/lib/
 RUN mkdir -p $HOME/.kettle/users && mkdir -p $HOME/.pentaho/users
 RUN mkdir -p $HOME/.kettle/data && cp -r ${CATALINA_HOME}/samples $HOME/.kettle/data/samples
@@ -45,17 +46,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 USER root
 
-RUN echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib"                > /etc/apt/sources.list \
- && echo "deb-src http://mirrors.aliyun.com/debian/ stretch main non-free contrib"           >> /etc/apt/sources.list \
- && echo "deb http://mirrors.aliyun.com/debian-security stretch/updates main"                >> /etc/apt/sources.list \
- && echo "deb-src http://mirrors.aliyun.com/debian-security stretch/updates main"            >> /etc/apt/sources.list \
- && echo "deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib"       >> /etc/apt/sources.list \
- && echo "deb-src http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib"   >> /etc/apt/sources.list \
- && echo "deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib"     >> /etc/apt/sources.list \
- && echo "deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" >> /etc/apt/sources.list
+#RUN echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib"                > /etc/apt/sources.list \
+# && echo "deb-src http://mirrors.aliyun.com/debian/ stretch main non-free contrib"           >> /etc/apt/sources.list \
+# && echo "deb http://mirrors.aliyun.com/debian-security stretch/updates main"                >> /etc/apt/sources.list \
+# && echo "deb-src http://mirrors.aliyun.com/debian-security stretch/updates main"            >> /etc/apt/sources.list \
+# && echo "deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib"       >> /etc/apt/sources.list \
+# && echo "deb-src http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib"   >> /etc/apt/sources.list \
+# && echo "deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib"     >> /etc/apt/sources.list \
+# && echo "deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" >> /etc/apt/sources.list
 
 RUN apt-get clean && apt-get update \
-    && apt-get install -y vim locales ttf-wqy-zenhei ibus ibus-gtk ibus-pinyin
+        && apt-get install --assume-yes apt-utils \
+        && apt-get install -y vim locales ttf-wqy-zenhei ibus ibus-gtk ibus-pinyin
 
 RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
  && echo "Asia/Shanghai" > /etc/timezone
